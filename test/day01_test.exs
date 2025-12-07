@@ -33,5 +33,10 @@ defmodule AdventOfCode.Day01Test do
         password = 2
         assert AdventOfCode.Day01.solve_part2(input) == password
     end
+    test "verify provided example passes" do
+        input = "L68\nL30\nR48\nL5\nR60\nL55\nL1\nL99\nR14\nL82"
+        password = 6
+        assert AdventOfCode.Day01.solve_part2(input) == password
+    end
   end
 end

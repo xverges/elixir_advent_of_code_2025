@@ -53,8 +53,8 @@ defmodule AdventOfCode.Day01 do
   end
 
   defp count_full_laps(move), do: move |> div(100) |> abs()
-  defp count_partial_lap(0, 0), do: 0
-  defp count_partial_lap(remainder, origin) when (remainder + origin) == 0, do: 1
+  defp count_partial_lap(_remainder, 0), do: 0
+  defp count_partial_lap(remainder, origin) when rem(remainder + origin, 100) == 0, do: 1
   defp count_partial_lap(remainder, origin) when remainder < 0 and remainder + origin < 0, do: 1
   defp count_partial_lap(remainder, origin) when remainder > 0 and remainder + origin > 100, do: 1
   defp count_partial_lap(_remainder, _origin), do: 0
