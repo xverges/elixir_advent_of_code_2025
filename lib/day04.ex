@@ -3,15 +3,12 @@ defmodule AdventOfCode.Day04 do
   def solve_part1(input) do
     matrix = parse_input(input)
 
-    result =
-      for {row, row_idx} <- Enum.with_index(matrix),
-          {val, col_idx} <- Enum.with_index(row),
-          val == 1 do
-        get_weight_of_neighbors(matrix, row_idx, col_idx)
-      end
-
-    result
-    |> Enum.filter(fn x -> x < 4 end)
+    for {row, row_idx} <- Enum.with_index(matrix),
+        {val, col_idx} <- Enum.with_index(row),
+        val == 1 do
+      get_weight_of_neighbors(matrix, row_idx, col_idx)
+    end
+    |> Enum.filter(&(&1 < 4))
     |> Enum.count()
   end
 
@@ -45,29 +42,28 @@ defmodule AdventOfCode.Day04 do
     line
     |> String.graphemes()
     |> Enum.map(fn char ->
-      cond do
-        char == "@" -> 1
-        true -> 0
+      case char do
+        "@" -> 1
+        _ -> 0
       end
     end)
   end
 
+  @neighbor_offsets [
+    {-1, -1},
+    {-1, 0},
+    {-1, 1},
+    {0, -1},
+    {0, 1},
+    {1, -1},
+    {1, 0},
+    {1, 1}
+  ]
   defp get_neighbors(matrix, row, col) do
-    neighbor_offsets = [
-      {-1, -1},
-      {-1, 0},
-      {-1, 1},
-      {0, -1},
-      {0, 1},
-      {1, -1},
-      {1, 0},
-      {1, 1}
-    ]
-
     rows = length(matrix)
     cols = length(hd(matrix))
 
-    for {drow, dcol} <- neighbor_offsets,
+    for {drow, dcol} <- @neighbor_offsets,
         nrow = row + drow,
         ncol = col + dcol,
         nrow >= 0 and nrow < rows and ncol >= 0 and ncol < cols do
