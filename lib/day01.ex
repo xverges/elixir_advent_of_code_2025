@@ -1,12 +1,14 @@
 defmodule AdventOfCode.Day01 do
-
   @spec solve_part1(binary()) :: non_neg_integer()
   def solve_part1(input) do
     origin = 50
     moves = parse_moves(input)
     stops = Enum.scan(moves, origin, &apply_move/2)
-    zeros = Enum.filter(stops, &(&1 == 0))
-            |> length()
+
+    zeros =
+      Enum.filter(stops, &(&1 == 0))
+      |> length()
+
     zeros
   end
 
@@ -19,12 +21,15 @@ defmodule AdventOfCode.Day01 do
 
   @spec solve_part2(binary()) :: non_neg_integer()
   def solve_part2(input) do
-    { origin, steps } = { 50, 0 }
+    {origin, steps} = {50, 0}
     moves = parse_moves(input)
-    stops = Enum.scan(moves, { origin, steps }, &track_move/2)
-    zeros = stops
-          |> Enum.map(fn {_, steps} -> steps end)
-          |> Enum.sum()
+    stops = Enum.scan(moves, {origin, steps}, &track_move/2)
+
+    zeros =
+      stops
+      |> Enum.map(fn {_, steps} -> steps end)
+      |> Enum.sum()
+
     zeros
   end
 
@@ -48,7 +53,8 @@ defmodule AdventOfCode.Day01 do
   defp apply_move(move, origin) do
     (origin + move)
     |> rem(100)
-    |> then(&(100 + &1))  # Add 100 to deal with negative numbers
+    # Add 100 to deal with negative numbers
+    |> then(&(100 + &1))
     |> rem(100)
   end
 
@@ -59,10 +65,8 @@ defmodule AdventOfCode.Day01 do
   defp count_partial_lap(remainder, origin) when remainder > 0 and remainder + origin > 100, do: 1
   defp count_partial_lap(_remainder, _origin), do: 0
 
-  defp track_move(move, { origin, _ }) do
+  defp track_move(move, {origin, _}) do
     steps = count_full_laps(move) + count_partial_lap(rem(move, 100), origin)
-    { apply_move(move, origin), steps }
+    {apply_move(move, origin), steps}
   end
-
-
 end

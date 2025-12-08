@@ -1,5 +1,4 @@
 defmodule AdventOfCode.Day02 do
-
   @spec solve_part1(binary()) :: non_neg_integer()
   def solve_part1(input) do
     input
@@ -32,10 +31,12 @@ defmodule AdventOfCode.Day02 do
 
   @spec parse_ranges(binary()) :: [{integer(), integer()}]
   def parse_ranges(input) do
-    transform = fn  txt_range ->
-      [first, last] = txt_range
-                      |> String.split("-")
-                      |> Enum.map(&String.trim/1)
+    transform = fn txt_range ->
+      [first, last] =
+        txt_range
+        |> String.split("-")
+        |> Enum.map(&String.trim/1)
+
       {String.to_integer(first), String.to_integer(last)}
     end
 
@@ -51,18 +52,21 @@ defmodule AdventOfCode.Day02 do
 
   @spec get_invalid_ids_in_range(integer(), integer(), atom()) :: [integer()]
   def get_invalid_ids_in_range(first, last, strategy \\ :part1) do
+    invalid_ids =
+      Stream.unfold(first, fn
+        num when num <= last ->
+          next = next_candidate(num, strategy)
 
-    invalid_ids = Stream.unfold(first, fn
-      num when num <= last ->
-        next = next_candidate(num, strategy)
-        if num == next do
-          {num, next + 1}
-        else
-          {nil, next}
-        end
-      _ -> nil
-    end)
-    |> Enum.reject(&(&1 == nil))
+          if num == next do
+            {num, next + 1}
+          else
+            {nil, next}
+          end
+
+        _ ->
+          nil
+      end)
+      |> Enum.reject(&(&1 == nil))
 
     Enum.to_list(invalid_ids)
   end
@@ -75,7 +79,9 @@ defmodule AdventOfCode.Day02 do
 
   defp next_candidate(num, strategy) do
     num_digits = num_of_digits(num)
-    next_candidate_with_length(num, num_digits, strategy) || next_candidate_with_length(num, num_digits + 1, strategy)
+
+    next_candidate_with_length(num, num_digits, strategy) ||
+      next_candidate_with_length(num, num_digits + 1, strategy)
   end
 
   defp next_candidate_with_length(num, num_digits, :part1) do
