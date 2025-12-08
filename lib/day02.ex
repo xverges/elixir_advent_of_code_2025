@@ -72,42 +72,24 @@ defmodule AdventOfCode.Day02 do
     |> to_string()
     |> String.length()
   end
-  defp first_with_extra_digit(num) do
-    d = num_of_digits(num)
-    "1" <> String.duplicate("0", d) |> String.to_integer()
-  end
-  defp next_candidate(num, :part1) do
-    lowest = if rem(num_of_digits(num), 2) == 0, do: num, else: first_with_extra_digit(num)
-    num_digits = num_of_digits(lowest)
-    candidate =
-      lowest
-      |> to_string()
-      |> String.slice(0, div(num_digits, 2))
-      |> String.duplicate(2)
-      |> String.to_integer()
 
-    if num > candidate do
-      candidate
-      |> to_string()
-      |> String.slice(0, div(num_digits, 2))
-      |> String.to_integer()
-      |> then(&(&1 + 1))
-      |> to_string()
-      |> String.duplicate(2)
-      |> String.to_integer()
+  defp next_candidate(num, strategy) do
+    num_digits = num_of_digits(num)
+    next_candidate_with_length(num, num_digits, strategy) || next_candidate_with_length(num, num_digits + 1, strategy)
+  end
+
+  defp next_candidate_with_length(num, num_digits, :part1) do
+    # Part1: only patterns repeated exactly 2 times (even digit counts)
+    if rem(num_digits, 2) == 0 do
+      pattern_length = div(num_digits, 2)
+      find_candidate_for_pattern(num, pattern_length, 2)
     else
-      candidate
+      nil
     end
   end
 
-  defp next_candidate(num, :part2) do
-    num_digits = num_of_digits(num)
-
-    next_part2_candidate_with_length(num, num_digits) || next_part2_candidate_with_length(num, num_digits + 1)
-  end
-
-  defp next_part2_candidate_with_length(num, num_digits) do
-    # Size of the potentially repeated fragemnts
+  defp next_candidate_with_length(num, num_digits, :part2) do
+    # Size of the potentially repeated fragments
     pattern_lengths = get_divisors(num_digits) |> Enum.filter(&(div(num_digits, &1) >= 2))
 
     # For each fragment, find the smallest invalid ID >= num
@@ -122,20 +104,28 @@ defmodule AdventOfCode.Day02 do
 
   defp find_candidate_for_pattern(num, pattern_length, reps) do
     # Find smallest number >= num that is `pattern` repeated `reps` times
-    # Extract pattern from num and potentially increment
     num_str = to_string(num)
-    current_pattern_str = String.slice(num_str, 0, pattern_length)
-    candidate = String.duplicate(current_pattern_str, reps) |> String.to_integer()
-    current_pattern = String.to_integer(current_pattern_str)
+    target_length = pattern_length * reps
 
-    min_pattern = if candidate >= num, do: current_pattern, else: current_pattern + 1
-    pattern = to_string(min_pattern)
-
-    # Have we gone past 9...9?
-    if String.length(pattern) != pattern_length do
-      nil
+    # If num has fewer digits than target, start with smallest pattern
+    if String.length(num_str) < target_length do
+      min_pattern = :math.pow(10, pattern_length - 1) |> trunc()
+      String.duplicate(to_string(min_pattern), reps) |> String.to_integer()
     else
-      String.duplicate(pattern, reps) |> String.to_integer()
+      # Extract pattern from num and potentially increment
+      current_pattern_str = String.slice(num_str, 0, pattern_length)
+      candidate = String.duplicate(current_pattern_str, reps) |> String.to_integer()
+      current_pattern = String.to_integer(current_pattern_str)
+
+      min_pattern = if candidate >= num, do: current_pattern, else: current_pattern + 1
+      pattern = to_string(min_pattern)
+
+      # Have we gone past 9...9?
+      if String.length(pattern) != pattern_length do
+        nil
+      else
+        String.duplicate(pattern, reps) |> String.to_integer()
+      end
     end
   end
 
