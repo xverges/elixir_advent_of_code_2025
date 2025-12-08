@@ -20,10 +20,11 @@ defmodule Mix.Tasks.Aoc.New do
 
   @impl Mix.Task
   def run(args) do
-    day = case args do
-      [day_str] -> String.to_integer(day_str)
-      [] -> find_next_day()
-    end
+    day =
+      case args do
+        [day_str] -> String.to_integer(day_str)
+        [] -> find_next_day()
+      end
 
     day_padded = String.pad_leading(to_string(day), 2, "0")
 
