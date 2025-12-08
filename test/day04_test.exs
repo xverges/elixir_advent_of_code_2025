@@ -31,7 +31,7 @@ defmodule AdventOfCode.Day04Test do
         {9, 8}
       ]
 
-      knonw_missing_keys = [
+      known_missing_keys = [
         {0, 0},
         {0, 1},
         {0, 4},
@@ -44,20 +44,16 @@ defmodule AdventOfCode.Day04Test do
 
       parsed = AdventOfCode.Day04.parse_input(@sample_input_part1)
 
-      assert Enum.all?(
-               for key <- known_keys do
-                 Map.has_key?(parsed, key)
-               end
-             )
+      for key <- known_keys do
+        assert Map.has_key?(parsed, key)
+      end
 
-      assert Enum.all?(
-               for key <- knonw_missing_keys do
-                 not Map.has_key?(parsed, key)
-               end
-             )
+      for key <- known_missing_keys do
+        refute Map.has_key?(parsed, key)
+      end
     end
 
-    test "example input matched example output" do
+    test "example input matches example output" do
       expected = 13
       assert AdventOfCode.Day04.solve_part1(@sample_input_part1) == expected
     end
@@ -68,15 +64,13 @@ defmodule AdventOfCode.Day04Test do
   end
 
   describe "AdventOfCode.Day04.part2" do
-    @tag :skip
-    test "example input matched example output" do
+    test "example input matches example output" do
       expected = 43
       assert AdventOfCode.Day04.solve_part2(@sample_input_part1) == expected
     end
 
-    @tag :skip
     test "submitted solution works" do
-      assert AdventOfCode.Day04.solve_part2_from_file("inputs/day04.txt") == 0
+      assert AdventOfCode.Day04.solve_part2_from_file("inputs/day04.txt") == 8538
     end
   end
 end

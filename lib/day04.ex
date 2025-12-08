@@ -3,17 +3,8 @@ defmodule AdventOfCode.Day04 do
   def solve_part1(input) do
     matrix = parse_input(input)
 
-    for {{row, column}, _val} <- matrix,
-        reduce: 0 do
-      acc ->
-        neighbors_weight = get_weight_of_neighbors(matrix, row, column)
-
-        if neighbors_weight < 4 do
-          acc + 1
-        else
-          acc
-        end
-    end
+    get_all_weights_of_neighbors(matrix, 4)
+    |> Enum.count()
   end
 
   @spec solve_part1_from_file(String.t()) :: non_neg_integer()
@@ -25,7 +16,8 @@ defmodule AdventOfCode.Day04 do
 
   @spec solve_part2(binary()) :: non_neg_integer()
   def solve_part2(input) do
-    input
+    matrix = parse_input(input)
+    remove_rolls(matrix, 0, -1, 4)
   end
 
   @spec solve_part2_from_file(String.t()) :: non_neg_integer()
@@ -82,5 +74,28 @@ defmodule AdventOfCode.Day04 do
     get_neighbors(matrix, row, col)
     |> Enum.map(fn {_, val} -> val end)
     |> Enum.sum()
+  end
+
+  def get_all_weights_of_neighbors(matrix, threshold) do
+    for(
+      {{row, column}, _val} <- matrix,
+      do: {{row, column}, get_weight_of_neighbors(matrix, row, column)}
+    )
+    |> Enum.filter(fn {_, val} -> val < threshold end)
+  end
+
+  defp remove_rolls(matrix, acc, last_removed, threshold) do
+    if last_removed == 0 do
+      acc
+    else
+      rolls_removed =
+        matrix
+        |> get_all_weights_of_neighbors(threshold)
+
+      keys_to_drop = Enum.map(rolls_removed, fn {key, _weight} -> key end)
+      updated_matrix = Map.drop(matrix, keys_to_drop)
+      last_removed = length(rolls_removed)
+      remove_rolls(updated_matrix, acc + last_removed, last_removed, threshold)
+    end
   end
 end

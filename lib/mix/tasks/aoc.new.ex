@@ -98,7 +98,7 @@ defmodule Mix.Tasks.Aoc.New do
       use ExUnit.Case
 
       describe "AdventOfCode.Day#{day_padded}.part1" do
-        test "example input" do
+        test "example input matches example output" do
           input = \"\"\"
           # TODO: Add example input
           \"\"\"
@@ -115,7 +115,7 @@ defmodule Mix.Tasks.Aoc.New do
 
       describe "AdventOfCode.Day#{day_padded}.part2" do
         @tag :skip
-        test "example input" do
+        test "example input matches example output" do
           input = \"\"\"
           # TODO: Add example input
           \"\"\"
