@@ -3,13 +3,17 @@ defmodule AdventOfCode.Day04 do
   def solve_part1(input) do
     matrix = parse_input(input)
 
-    for {row, row_idx} <- Enum.with_index(matrix),
-        {val, col_idx} <- Enum.with_index(row),
-        val == 1 do
-      get_weight_of_neighbors(matrix, row_idx, col_idx)
+    for {{row, column}, _val} <- matrix,
+        reduce: 0 do
+      acc ->
+        neighbors_weight = get_weight_of_neighbors(matrix, row, column)
+
+        if neighbors_weight < 4 do
+          acc + 1
+        else
+          acc
+        end
     end
-    |> Enum.filter(&(&1 < 4))
-    |> Enum.count()
   end
 
   @spec solve_part1_from_file(String.t()) :: non_neg_integer()
@@ -31,11 +35,17 @@ defmodule AdventOfCode.Day04 do
     |> solve_part2()
   end
 
-  @spec parse_input(binary()) :: [[integer()]]
+  @spec parse_input(binary()) :: map()
   def parse_input(input) do
-    input
-    |> String.split("\n", trim: true)
-    |> Enum.map(&parse_line/1)
+    lines =
+      input
+      |> String.split("\n", trim: true)
+
+    for {line, row_idx} <- Enum.with_index(lines),
+        {val, col_idx} <- Enum.with_index(parse_line(line)),
+        val == 1,
+        into: %{},
+        do: {{row_idx, col_idx}, val}
   end
 
   defp parse_line(line) do
@@ -60,20 +70,17 @@ defmodule AdventOfCode.Day04 do
     {1, 1}
   ]
   defp get_neighbors(matrix, row, col) do
-    rows = length(matrix)
-    cols = length(hd(matrix))
-
     for {drow, dcol} <- @neighbor_offsets,
         nrow = row + drow,
         ncol = col + dcol,
-        nrow >= 0 and nrow < rows and ncol >= 0 and ncol < cols do
-      {nrow, ncol, Enum.at(matrix, nrow) |> Enum.at(ncol)}
+        Map.has_key?(matrix, {nrow, ncol}) do
+      {{nrow, ncol}, Map.get(matrix, {nrow, ncol})}
     end
   end
 
   defp get_weight_of_neighbors(matrix, row, col) do
     get_neighbors(matrix, row, col)
-    |> Enum.map(fn {_, _, val} -> val end)
+    |> Enum.map(fn {_, val} -> val end)
     |> Enum.sum()
   end
 end
