@@ -44,20 +44,13 @@ defmodule AdventOfCode.Day05Test do
   end
 
   describe "AdventOfCode.Day05.part2" do
-    @tag :skip
     test "example input matches example output" do
-      input = """
-      # TODO: Add example input
-      """
-
-      # TODO: Add expected result
-      expected = 0
-      assert AdventOfCode.Day05.solve_part2(input) == expected
+      expected = 14
+      assert AdventOfCode.Day05.solve_part2(@sample_input_part1) == expected
     end
 
-    @tag :skip
     test "submitted solution works" do
-      assert AdventOfCode.Day05.solve_part2_from_file("inputs/day05.txt") == 0
+      assert AdventOfCode.Day05.solve_part2_from_file("inputs/day05.txt") == 336173027056994
     end
   end
 end

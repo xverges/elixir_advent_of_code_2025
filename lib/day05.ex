@@ -18,7 +18,10 @@ defmodule AdventOfCode.Day05 do
 
   @spec solve_part2(binary()) :: non_neg_integer()
   def solve_part2(input) do
-    input
+    {ranges, _} = parse_input(input)
+    consolidate_ranges(ranges)
+    |> Enum.map(fn {first, last} -> last - first + 1 end)
+    |> Enum.sum()
   end
 
   @spec solve_part2_from_file(String.t()) :: non_neg_integer()
